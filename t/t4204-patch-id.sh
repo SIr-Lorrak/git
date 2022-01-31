@@ -227,7 +227,7 @@ index e439850..7146eb8 100644
 +e
 EOF
 
-test_expect_success 'patch-id handles diffs with one line of before/after'
+test_expect_success 'patch-id handles diffs with one line of before/after' '
 	cat diffu1 | calc_patch_id diffu1 &&
 	test_config patchid.stable true &&
 	cat diffu1 | calc_patch_id diffu1stable
