@@ -2221,6 +2221,9 @@ static int check_ok_to_remove(const char *name, int len, int dtype,
 	 *
 	 * Ignore that lstat() if it matches.
 	 */
+	if (!ie_modified(&o->result, ce, st, 0))
+		return 0;
+
 	if (ignore_case && icase_exists(o, name, len, st))
 		return 0;
 
