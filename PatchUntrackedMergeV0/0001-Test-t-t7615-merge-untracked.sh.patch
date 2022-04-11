@@ -1,0 +1,108 @@
+From 28c981ee5e73e6507c86df5c0120f1878addaacc Mon Sep 17 00:00:00 2001
+From: Jonathan <Jonathan.bressat@etu.univ-lyon1.fr>
+Date: Thu, 7 Apr 2022 19:01:58 +0200
+Subject: [PATCH 1/2] Test: t/t7615-merge-untracked.sh
+
+adding new tests that need to pass to comfirm that the new feature works.
+These tests merge when there is a non-tracked file in the current
+directory that has the same name as the tracked file in the merged
+branch.
+Co-authored-by: COGONI Guillaume <cogoni.guillaume@gmail.com>
+---
+ t/t7615-merge-untracked.sh | 83 ++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 83 insertions(+)
+ create mode 100755 t/t7615-merge-untracked.sh
+
+diff --git a/t/t7615-merge-untracked.sh b/t/t7615-merge-untracked.sh
+new file mode 100755
+index 0000000000..884e2e942d
+--- /dev/null
++++ b/t/t7615-merge-untracked.sh
+@@ -0,0 +1,83 @@
++#!/bin/sh
++
++test_description='test when merge with untracked file'
++
++. ./test-lib.sh
++
++
++test_expect_success 'untracked fastforward' '
++    echo content >README.md &&
++    git add README.md &&
++    git commit -m "init" &&
++    git branch A &&
++    git checkout -B B &&
++    echo content >file &&
++    git add file &&
++    git commit -m "tracked" &&
++    git switch A &&
++    echo content >file &&
++    git merge B
++'
++
++test_expect_failure 'untracked fastforward different content' '
++    rm * &&
++    rm -r .git &&
++    git init &&
++    echo content >README.md &&
++    git add README.md &&
++    git commit -m "init" &&
++    git branch A &&
++    git checkout -B B &&
++    echo content >file &&
++    git add file &&
++    git commit -m "tracked" &&
++    git switch A &&
++    echo dif >file &&
++    git merge B
++'
++
++test_expect_success 'untracked normal merge' '
++    rm * &&
++    rm -r .git &&
++    git init &&
++    echo content >README.md &&
++    git add README.md &&
++    git commit -m "init" &&
++    git branch A &&
++    git checkout -B B &&
++    echo content >fileB &&
++    echo content >file &&
++    git add fileB &&
++    git add file &&
++    git commit -m "tracked" &&
++    git switch A &&
++    echo content >fileA &&
++    git add fileA &&
++    git commit -m "exA" &&
++    echo content >file &&
++    git merge B -m "merge"
++'
++
++test_expect_failure 'untracked normal merge different content' '
++    rm * &&
++    rm -r .git &&
++    git init &&
++    echo content >README.md &&
++    git add README.md &&
++    git commit -m "init" &&
++    git branch A &&
++    git checkout -B B &&
++    echo content >fileB &&
++    echo content >file &&
++    git add fileB &&
++    git add file &&
++    git commit -m "tracked" &&
++    git switch A &&
++    echo content >fileA &&
++    git add fileA &&
++    git commit -m "exA" &&
++    echo dif >file &&
++    git merge B -m "merge"
++'
++
++test_done
+\ No newline at end of file
+-- 
+2.35.1.7.gc8609858e0.dirty
+

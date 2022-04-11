@@ -1,0 +1,31 @@
+From cfd97454870b96d45106f4047c5c34d2a3a2c8a3 Mon Sep 17 00:00:00 2001
+From: Jonathan <Jonathan.bressat@etu.univ-lyon1.fr>
+Date: Thu, 7 Apr 2022 19:12:03 +0200
+Subject: [PATCH 2/2] Merge with untracked file that are the same without
+ failure
+
+In unpack-trees.c in the check_ok_to_remove() function: add a new
+statement, if the file has the same content as the merged file, it
+can be removed.
+Co-authored-by: BRESSAT Jonathan <cogoni.guillaume@gmail.com>
+---
+ unpack-trees.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/unpack-trees.c b/unpack-trees.c
+index 360844bda3..ffb0161c3a 100644
+--- a/unpack-trees.c
++++ b/unpack-trees.c
+@@ -2221,6 +2221,9 @@ static int check_ok_to_remove(const char *name, int len, int dtype,
+ 	 *
+ 	 * Ignore that lstat() if it matches.
+ 	 */
++	if (!ie_modified(&o->result, ce, st, 0))
++		return 0;
++
+ 	if (ignore_case && icase_exists(o, name, len, st))
+ 		return 0;
+ 
+-- 
+2.35.1.7.gc8609858e0.dirty
+
