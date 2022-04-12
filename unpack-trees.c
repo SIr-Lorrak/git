@@ -2259,6 +2259,10 @@ static int check_ok_to_remove(const char *name, int len, int dtype,
 			return 0;
 	}
 
+	if (!ie_modified(&o->result, ce, st, 0))
+		return 0;
+
+
 	return add_rejected_path(o, error_type, name);
 }
 
