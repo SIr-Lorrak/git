@@ -12,13 +12,13 @@ test_expect_success 'setup' '
 	git checkout -b A
 '
 
-test_expect_success 'fastforward fail when untracked file has the same content' '
+test_expect_success 'fastforward overwrite untracked file that has the same content' '
 	test_when_finished "git branch -D B && git reset --hard init && git clean --force" &&
 	git checkout -b B &&
 	test_commit --no-tag "tracked" file "content" &&
 	git checkout A &&
 	echo content >file &&
-	test_must_fail git merge B
+	git merge B
 '
 
 test_expect_success 'fastforward fail when untracked file has different content' '
@@ -30,14 +30,14 @@ test_expect_success 'fastforward fail when untracked file has different content'
 	test_must_fail git merge B
 '
 
-test_expect_success 'normal merge fail when untracked file has the same content' '
+test_expect_success 'normal merge overwrite untracked file that has the same content' '
 	test_when_finished "git branch -D B && git reset --hard init && git clean --force" &&
 	git checkout -b B &&
 	test_commit --no-tag "tracked" file "content" fileB "content" &&
 	git switch A &&
 	test_commit --no-tag "exA" fileA "content" &&
 	echo content >file &&
-	test_must_fail git merge B
+	git merge B
 '
 
 test_expect_success 'normal merge fail when untracked file has different content' '
