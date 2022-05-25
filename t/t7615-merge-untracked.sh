@@ -61,24 +61,24 @@ test_expect_success 'merge fail when tracked file modification is unstaged' '
 '
 
 test_expect_success 'fastforward overwrite untracked file that has the same content with the configuration variable' '
-    test_when_finished "git branch -D B && git reset --hard init && git clean --force" &&
-    test_config merge.overwritesamecontent true &&
-    git checkout -b B &&
-    test_commit --no-tag "tracked" file "content" &&
-    git checkout A &&
-    echo content >file &&
-    git merge B
+	test_when_finished "git branch -D B && git reset --hard init && git clean --force" &&
+	test_config merge.overwritesamecontent true &&
+	git checkout -b B &&
+	test_commit --no-tag "tracked" file "content" &&
+	git checkout A &&
+	echo content >file &&
+	git merge B
 '
 
 test_expect_success 'normal merge overwrite untracked file that has the same content with the configuration variable' '
-    test_when_finished "git branch -D B && git reset --hard init && git clean --force" &&
-    test_config merge.overwritesamecontent true &&
-    git checkout -b B &&
+	test_when_finished "git branch -D B && git reset --hard init && git clean --force" &&
+	test_config merge.overwritesamecontent true &&
+	git checkout -b B &&
 	test_commit --no-tag "tracked" file "content" fileB "content" &&
 	git switch A &&
 	test_commit --no-tag "exA" fileA "content" &&
 	echo content >file &&
-    git merge B
+	git merge B
 '
 
 test_done
