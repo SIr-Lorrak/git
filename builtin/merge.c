@@ -658,6 +658,8 @@ static int git_merge_config(const char *k, const char *v, void *cb)
 	} else if (!strcmp(k, "merge.autostash")) {
 		autostash = git_config_bool(k, v);
 		return 0;
+	} else if (!strcmp(k,"merge.overwritesamecontent")) {
+		overwrite_same_content = git_config_bool(k, v);
 	}
 
 	status = fmt_merge_msg_config(k, v, cb);

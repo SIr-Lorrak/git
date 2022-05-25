@@ -89,6 +89,11 @@ merge.autoStash::
 	`--autostash` options of linkgit:git-merge[1].
 	Defaults to false.
 
+merge.overwritesamecontent::
+    When set to true, it will modify the behavior of git merge 
+    to overwrite untracked files that have the same name and 
+    content than files in the merged branch.	
+
 merge.tool::
 	Controls which merge tool is used by linkgit:git-mergetool[1].
 	The list below shows the valid built-in values.
