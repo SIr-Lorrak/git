@@ -2257,6 +2257,10 @@ static int check_ok_to_remove(const char *name, int len, int dtype,
 	if (result) {
 		if (result->ce_flags & CE_REMOVE)
 			return 0;
+	} else if (ce && !ie_modified(o->src_index, ce, st, 0)) {
+		if(o->overwrite_same_content) {
+			return 0;
+		}
 	}
 
 	return add_rejected_path(o, error_type, name);
@@ -2264,7 +2268,8 @@ static int check_ok_to_remove(const char *name, int len, int dtype,
 
 /*
  * We do not want to remove or overwrite a working tree file that
- * is not tracked, unless it is ignored.
+ * is not tracked, unless it is ignored or it has the same content
+ * than the merged file with the option --overwrite_same_content.
  */
 static int verify_absent_1(const struct cache_entry *ce,
 			   enum unpack_trees_error_types error_type,

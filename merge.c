@@ -47,7 +47,8 @@ int try_merge_command(struct repository *r,
 int checkout_fast_forward(struct repository *r,
 			  const struct object_id *head,
 			  const struct object_id *remote,
-			  int overwrite_ignore)
+			  int overwrite_ignore,
+			  int overwrite_same_content)
 {
 	struct tree *trees[MAX_UNPACK_TREES];
 	struct unpack_trees_options opts;
@@ -80,6 +81,7 @@ int checkout_fast_forward(struct repository *r,
 
 	memset(&opts, 0, sizeof(opts));
 	opts.preserve_ignored = !overwrite_ignore;
+	opts.overwrite_same_content = overwrite_same_content;
 
 	opts.head_idx = 1;
 	opts.src_index = r->index;

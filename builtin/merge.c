@@ -68,6 +68,7 @@ static int option_edit = -1;
 static int allow_trivial = 1, have_message, verify_signatures;
 static int check_trust_level = 1;
 static int overwrite_ignore = 1;
+static int overwrite_same_content;
 static struct strbuf merge_msg = STRBUF_INIT;
 static struct strategy **use_strategies;
 static size_t use_strategies_nr, use_strategies_alloc;
@@ -305,6 +306,7 @@ static struct option builtin_merge_options[] = {
 	OPT_BOOL(0, "overwrite-ignore", &overwrite_ignore, N_("update ignored files (default)")),
 	OPT_BOOL(0, "signoff", &signoff, N_("add a Signed-off-by trailer")),
 	OPT_BOOL(0, "no-verify", &no_verify, N_("bypass pre-merge-commit and commit-msg hooks")),
+	OPT_BOOL(0, "overwrite-same-content", &overwrite_same_content, N_("overwrite untracked file with the same content and name")),
 	OPT_END()
 };
 
@@ -684,6 +686,7 @@ static int read_tree_trivial(struct object_id *common, struct object_id *head,
 	opts.trivial_merges_only = 1;
 	opts.merge = 1;
 	opts.preserve_ignored = 0; /* FIXME: !overwrite_ignore */
+	opts.overwrite_same_content = overwrite_same_content;
 	trees[nr_trees] = parse_tree_indirect(common);
 	if (!trees[nr_trees++])
 		return -1;
@@ -746,6 +749,7 @@ static int try_merge_strategy(const char *strategy, struct commit_list *common,
 
 		o.branch1 = head_arg;
 		o.branch2 = merge_remote_util(remoteheads->item)->name;
+		o.overwrite_same_content = overwrite_same_content;
 
 		for (j = common; j; j = j->next)
 			commit_list_insert(j->item, &reversed);
@@ -1573,7 +1577,8 @@ int cmd_merge(int argc, const char **argv, const char *prefix)
 		if (checkout_fast_forward(the_repository,
 					  &head_commit->object.oid,
 					  &commit->object.oid,
-					  overwrite_ignore)) {
+					  overwrite_ignore,
+					  overwrite_same_content)) {
 			apply_autostash(git_path_merge_autostash(the_repository));
 			ret = 1;
 			goto done;

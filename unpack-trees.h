@@ -71,6 +71,7 @@ struct unpack_trees_options {
 		     quiet,
 		     exiting_early,
 		     show_all_errors,
+		     overwrite_same_content,
 		     dry_run;
 	enum unpack_trees_reset_type reset;
 	const char *prefix;

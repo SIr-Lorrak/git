@@ -529,7 +529,7 @@ static int fast_forward_to(struct repository *r,
 	struct strbuf err = STRBUF_INIT;
 
 	repo_read_index(r);
-	if (checkout_fast_forward(r, from, to, 1))
+	if (checkout_fast_forward(r, from, to, 1, 0))
 		return -1; /* the callee should have complained already */
 
 	strbuf_addf(&sb, _("%s: fast-forward"), _(action_name(opts)));

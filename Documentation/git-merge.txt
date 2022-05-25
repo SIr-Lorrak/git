@@ -100,6 +100,10 @@ will be appended to the specified message.
 	Silently overwrite ignored files from the merge result. This
 	is the default behavior. Use `--no-overwrite-ignore` to abort.
 
+--overwrite-same-content::
+       Silently overwrite untracked files that have the same content 
+       and name than files in the merged branch from the merge result.
+
 --abort::
 	Abort the current conflict resolution process, and
 	try to reconstruct the pre-merge state. If an autostash entry is

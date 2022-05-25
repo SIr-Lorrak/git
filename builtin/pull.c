@@ -92,6 +92,7 @@ static struct strvec opt_strategies = STRVEC_INIT;
 static struct strvec opt_strategy_opts = STRVEC_INIT;
 static char *opt_gpg_sign;
 static int opt_allow_unrelated_histories;
+static int opt_overwrite_same_content;
 
 /* Options passed to git-fetch */
 static char *opt_all;
@@ -182,6 +183,7 @@ static struct option pull_options[] = {
 	OPT_SET_INT(0, "allow-unrelated-histories",
 		    &opt_allow_unrelated_histories,
 		    N_("allow merging unrelated histories"), 1),
+	OPT_BOOL(0, "overwrite-same-content", &opt_overwrite_same_content, N_("overwrite untracked file with the same content and name")),
 
 	/* Options passed to git-fetch */
 	OPT_GROUP(N_("Options related to fetching")),
@@ -612,7 +614,7 @@ static int pull_into_void(const struct object_id *merge_head,
 	 */
 	if (checkout_fast_forward(the_repository,
 				  the_hash_algo->empty_tree,
-				  merge_head, 0))
+				  merge_head, 0, opt_overwrite_same_content))
 		return 1;
 
 	if (update_ref("initial pull", "HEAD", merge_head, curr_head, 0, UPDATE_REFS_DIE_ON_ERR))
@@ -679,6 +681,8 @@ static int run_merge(void)
 		strvec_pushf(&args, "--cleanup=%s", cleanup_arg);
 	if (opt_ff)
 		strvec_push(&args, opt_ff);
+	if (opt_overwrite_same_content)
+		strvec_push(&args, "--overwrite-same-content");
 	if (opt_verify)
 		strvec_push(&args, opt_verify);
 	if (opt_verify_signatures)
@@ -1078,7 +1082,7 @@ int cmd_pull(int argc, const char **argv, const char *prefix)
 			"commit %s."), oid_to_hex(&orig_head));
 
 		if (checkout_fast_forward(the_repository, &orig_head,
-					  &curr_head, 0))
+					  &curr_head, 0, opt_overwrite_same_content))
 			die(_("Cannot fast-forward your working tree.\n"
 				"After making sure that you saved anything precious from\n"
 				"$ git diff %s\n"

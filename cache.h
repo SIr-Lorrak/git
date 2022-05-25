@@ -1858,7 +1858,8 @@ int try_merge_command(struct repository *r,
 int checkout_fast_forward(struct repository *r,
 			  const struct object_id *from,
 			  const struct object_id *to,
-			  int overwrite_ignore);
+			  int overwrite_ignore,
+			  int overwrite_same_content);
 
 
 int sane_execvp(const char *file, char *const argv[]);
