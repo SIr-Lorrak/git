@@ -760,6 +760,7 @@ static int merge_working_tree(const struct checkout_opts *opts,
 				       &new_branch_info->commit->object.oid :
 				       &new_branch_info->oid, NULL);
 		topts.preserve_ignored = !opts->overwrite_ignore;
+		topts.overwrite_same_content = 0;/* FIXME: opts->overwrite_same_content */
 		tree = parse_tree_indirect(old_branch_info->commit ?
 					   &old_branch_info->commit->object.oid :
 					   the_hash_algo->empty_tree);

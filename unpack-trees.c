@@ -158,17 +158,17 @@ void setup_unpack_trees_porcelain(struct unpack_trees_options *opts,
 	if (!strcmp(cmd, "checkout"))
 		msg = advice_enabled(ADVICE_COMMIT_BEFORE_MERGE)
 		      ? _("The following untracked working tree files would be overwritten by checkout:\n%%s"
-			  "Please move or remove them before you switch branches.")
+			  "Please move or remove them before you switch branches.%%s")
 		      : _("The following untracked working tree files would be overwritten by checkout:\n%%s");
 	else if (!strcmp(cmd, "merge"))
 		msg = advice_enabled(ADVICE_COMMIT_BEFORE_MERGE)
 		      ? _("The following untracked working tree files would be overwritten by merge:\n%%s"
-			  "Please move or remove them before you merge.")
+			  "Please move or remove them before you merge.%%s")
 		      : _("The following untracked working tree files would be overwritten by merge:\n%%s");
 	else
 		msg = advice_enabled(ADVICE_COMMIT_BEFORE_MERGE)
 		      ? _("The following untracked working tree files would be overwritten by %s:\n%%s"
-			  "Please move or remove them before you %s.")
+			  "Please move or remove them before you %s.%%s")
 		      : _("The following untracked working tree files would be overwritten by %s:\n%%s");
 	msgs[ERROR_WOULD_LOSE_UNTRACKED_OVERWRITTEN] =
 		strvec_pushf(&opts->msgs_to_free, msg, cmd, cmd);
@@ -251,6 +251,14 @@ static void display_error_msgs(struct unpack_trees_options *o)
 {
 	int e;
 	unsigned error_displayed = 0;
+	const char *can_overwrite_msg;
+
+	if (o->can_overwrite) {
+		can_overwrite_msg = _("\nYou can also rerun the command with --overwrite-same-content to overwrite files with same content.");
+	} else {
+		can_overwrite_msg = "";
+	}
+
 	for (e = 0; e < NB_UNPACK_TREES_ERROR_TYPES; e++) {
 		struct string_list *rejects = &o->unpack_rejects[e];
 
@@ -261,7 +269,8 @@ static void display_error_msgs(struct unpack_trees_options *o)
 			error_displayed = 1;
 			for (i = 0; i < rejects->nr; i++)
 				strbuf_addf(&path, "\t%s\n", rejects->items[i].string);
-			error(ERRORMSG(o, e), super_prefixed(path.buf));
+
+			error(ERRORMSG(o, e), super_prefixed(path.buf), can_overwrite_msg);
 			strbuf_release(&path);
 		}
 		string_list_clear(rejects, 0);
@@ -1711,6 +1720,7 @@ int unpack_trees(unsigned len, struct tree_desc *t, struct unpack_trees_options 
 	struct pattern_list pl;
 	int free_pattern_list = 0;
 	struct dir_struct dir = DIR_INIT;
+	o->can_overwrite = 1;
 
 	if (o->reset == UNPACK_RESET_INVALID)
 		BUG("o->reset had a value of 1; should be UNPACK_TREES_*_UNTRACKED");
@@ -2261,6 +2271,8 @@ static int check_ok_to_remove(const char *name, int len, int dtype,
 		if(o->overwrite_same_content) {
 			return 0;
 		}
+	} else {
+		o->can_overwrite = 0;
 	}
 
 	return add_rejected_path(o, error_type, name);
